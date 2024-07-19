@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "cwps-minimaps",
+  "version": "${version}",
+  "name": "CWPS-Minimaps",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/Fisch37/CWPS-Minimaps"
+  },
+  "license": "MIT",
+  "icon": "assets/cwps-minimaps/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "de.fisch37.cwpsminimaps.CWPSMinimapsClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  },
+  "suggests": {
+    "journeymap": "~1.21-6.0.0-beta.18+fabric",
+    "xaeros-minimap": "~24.2.1_Fabric_1.21"
+  }
+}
