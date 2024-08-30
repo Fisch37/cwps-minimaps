@@ -4,7 +4,6 @@ import de.fisch37.cwpsminimaps.integrations.IntegrationRegistry;
 import de.fisch37.cwpsminimaps.integrations.JourneyIntegration;
 import de.fisch37.cwpsminimaps.integrations.MinimapIntegration;
 import de.fisch37.cwpsminimaps.integrations.XaeroIntegration;
-import de.fisch37.cwpsminimaps.network.packet.PacketTypes;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +25,7 @@ public class CWPSMinimapsClient implements ClientModInitializer {
         IntegrationRegistry.registerIfAbsent("journeymap", JourneyIntegration.class);
         IntegrationRegistry.registerIfAbsent("xaerominimap", XaeroIntegration.class);
 
-        PacketTypes.register();
+
 
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             if (integration == null) integration = IntegrationRegistry.startIntegration();
