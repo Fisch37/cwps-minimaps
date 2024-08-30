@@ -62,12 +62,15 @@ public abstract class IntegrationRegistry {
         });
     }
 
+    public static void reloadWaypoints(MinimapIntegration integration) {
+        api.getAccessibleWaypoints().forEach(integration::addWaypoint);
+    }
+
     public static Optional<MinimapIntegration> startIntegration() {
         Optional<MinimapIntegration> integration = makeAvailableIntegration();
         if (integration.isPresent()) {
             MinimapIntegration integrationValue = integration.get();
-            api.getAccessibleWaypoints().forEach(integrationValue::addWaypoint);
-
+            reloadWaypoints(integrationValue);
             LOG.info("Registered minimap integration {}", integrationValue.getClass());
         } else {
             LOG.info("No minimap Integration found, none started");

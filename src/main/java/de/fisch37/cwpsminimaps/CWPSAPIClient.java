@@ -27,6 +27,7 @@ public class CWPSAPIClient implements WPSClientInitializer {
     public void onCWPSInitialize(WPSSender sender) {
         instance = this;
         this.sender = sender;
+        CWPSMinimapsClient.onNewAPI(this);
     }
 
     @Override
