@@ -1,7 +1,6 @@
 package de.fisch37.cwpsminimaps.integrations;
 
-import de.fisch37.cwpsminimaps.network.AccessLevel;
-import de.fisch37.cwpsminimaps.network.packet.WaypointInfo;
+import de.fisch37.clientwps.data.AccessLevel;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import xaero.common.minimap.waypoints.Waypoint;
 import xaero.common.minimap.waypoints.WaypointsManager;
@@ -56,18 +55,17 @@ public class XaeroIntegration implements MinimapIntegration {
      * <p>
      * The semantics of this are implementation-dependent.
      *
-     * @param wpsInfo The waypoint to add
+     * @param waypoint The waypoint to add
      * @return Whether the waypoint was actually added or it already existed
      */
     @Override
-    public boolean addWaypoint(WaypointInfo wpsInfo) {
-        de.fisch37.cwpsminimaps.network.Waypoint waypoint = wpsInfo.waypoint();
+    public boolean addWaypoint(de.fisch37.clientwps.data.Waypoint waypoint) {
         xaerosCustomWaypointsHook.put(
                 waypoint.key().hashCode(),
                 new Waypoint(
-                        waypoint.pos().getX(),
-                        waypoint.pos().getY(),
-                        waypoint.pos().getZ(),
+                        waypoint.position().getX(),
+                        waypoint.position().getY(),
+                        waypoint.position().getZ(),
                         waypoint.key().toString(),
                         Character.toString(waypoint.key().name().charAt(0)),
                         getColour(waypoint.access()),

@@ -1,7 +1,6 @@
 package de.fisch37.cwpsminimaps.integrations;
 
-import de.fisch37.cwpsminimaps.network.Waypoint;
-import de.fisch37.cwpsminimaps.network.packet.WaypointInfo;
+import de.fisch37.clientwps.data.Waypoint;
 import journeymap.api.v2.client.IClientAPI;
 import journeymap.api.v2.client.IClientPlugin;
 import journeymap.api.v2.common.waypoint.WaypointFactory;
@@ -32,17 +31,16 @@ public class JourneyIntegration implements MinimapIntegration {
      * <p>
      * The semantics of this are implementation-dependent.
      *
-     * @param wpsInfo The waypoint to add
+     * @param waypoint The waypoint to add
      * @return Whether the waypoint was actually added or it already existed
      */
     @Override
-    public boolean addWaypoint(WaypointInfo wpsInfo) {
-        Waypoint waypoint = wpsInfo.waypoint();
+    public boolean addWaypoint(Waypoint waypoint) {
         journeymap.api.v2.common.waypoint.Waypoint jwaypoint = WaypointFactory.createClientWaypoint(
                 MOD_ID,
-                waypoint.pos(),
+                waypoint.position(),
                 waypoint.key().toString(),
-                waypoint.world(),
+                waypoint.dimension(),
                 false
         );
         return group.addWaypoint(jwaypoint);

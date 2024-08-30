@@ -1,6 +1,6 @@
 package de.fisch37.cwpsminimaps.integrations;
 
-import de.fisch37.cwpsminimaps.network.packet.WaypointInfo;
+import de.fisch37.clientwps.data.Waypoint;
 
 public interface MinimapIntegration {
     /**
@@ -12,5 +12,5 @@ public interface MinimapIntegration {
      * @param waypoint The waypoint to add
      * @return Whether the waypoint was actually added or it already existed
      */
-    boolean addWaypoint(WaypointInfo waypoint);
+    boolean addWaypoint(Waypoint waypoint);
 }

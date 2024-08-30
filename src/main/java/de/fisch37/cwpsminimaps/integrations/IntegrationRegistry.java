@@ -1,7 +1,6 @@
 package de.fisch37.cwpsminimaps.integrations;
 
-import de.fisch37.cwpsminimaps.network.packet.WaypointsPayload;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static de.fisch37.cwpsminimaps.CWPSMinimapsClient.LOG;
+import static de.fisch37.cwpsminimaps.CWPSMinimapsClient.api;
 
 public abstract class IntegrationRegistry {
     private static final Map<String, Class<? extends MinimapIntegration>> INTEGRATIONS = new LinkedHashMap<>();
@@ -66,8 +66,7 @@ public abstract class IntegrationRegistry {
         Optional<MinimapIntegration> integration = makeAvailableIntegration();
         if (integration.isPresent()) {
             MinimapIntegration integrationValue = integration.get();
-            ClientPlayNetworking.registerGlobalReceiver(WaypointsPayload.ID, (payload, context) ->
-                    payload.waypoints().forEach(integrationValue::addWaypoint));
+            api.getAccessibleWaypoints().forEach(integrationValue::addWaypoint);
 
             LOG.info("Registered minimap integration {}", integrationValue.getClass());
         } else {
