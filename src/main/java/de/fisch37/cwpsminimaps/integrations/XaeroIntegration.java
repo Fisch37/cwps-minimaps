@@ -1,8 +1,8 @@
 package de.fisch37.cwpsminimaps.integrations;
 
 import de.fisch37.clientwps.data.AccessLevel;
+import de.fisch37.clientwps.data.Waypoint;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import xaero.common.minimap.waypoints.Waypoint;
 import xaero.common.minimap.waypoints.WaypointsManager;
 
 import java.util.Hashtable;
@@ -10,7 +10,7 @@ import java.util.Hashtable;
 import static de.fisch37.cwpsminimaps.CWPSMinimapsClient.MOD_ID;
 
 public class XaeroIntegration implements MinimapIntegration {
-    private final Hashtable<Integer, Waypoint> xaerosCustomWaypointsHook;
+    private final Hashtable<Integer, xaero.common.minimap.waypoints.Waypoint> xaerosCustomWaypointsHook;
 
     public XaeroIntegration() {
         xaerosCustomWaypointsHook = WaypointsManager.getCustomWaypoints(MOD_ID);
@@ -49,6 +49,19 @@ public class XaeroIntegration implements MinimapIntegration {
         };
     }
 
+    private xaero.common.minimap.waypoints.Waypoint convert(de.fisch37.clientwps.data.Waypoint waypoint) {
+        return new xaero.common.minimap.waypoints.Waypoint(
+                waypoint.position().getX(),
+                waypoint.position().getY(),
+                waypoint.position().getZ(),
+                waypoint.key().toString(),
+                Character.toString(waypoint.key().name().charAt(0)),
+                getColour(waypoint.access()),
+                0,  // Don't disappear on arrival and be visible
+                true  // Don't persist across client sessions
+        );
+    }
+
     /**
      * Adds a single waypoint to the minimap or
      * does nothing if the waypoint already exists.
@@ -59,20 +72,16 @@ public class XaeroIntegration implements MinimapIntegration {
      * @return Whether the waypoint was actually added or it already existed
      */
     @Override
-    public boolean addWaypoint(de.fisch37.clientwps.data.Waypoint waypoint) {
+    public boolean addWaypoint(Waypoint waypoint) {
         xaerosCustomWaypointsHook.put(
                 waypoint.key().hashCode(),
-                new Waypoint(
-                        waypoint.position().getX(),
-                        waypoint.position().getY(),
-                        waypoint.position().getZ(),
-                        waypoint.key().toString(),
-                        Character.toString(waypoint.key().name().charAt(0)),
-                        getColour(waypoint.access()),
-                        0,  // Don't disappear on arrival and be visible
-                        true  // Don't persist across client sessions
-                )
+                convert(waypoint)
         );
         return true;
+    }
+
+    @Override
+    public void updateWaypoint(Waypoint waypoint) {
+        addWaypoint(waypoint);
     }
 }

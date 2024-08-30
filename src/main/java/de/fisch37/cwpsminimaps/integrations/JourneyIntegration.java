@@ -25,6 +25,16 @@ public class JourneyIntegration implements MinimapIntegration {
         }
     }
 
+    private journeymap.api.v2.common.waypoint.Waypoint convert(Waypoint waypoint) {
+        return WaypointFactory.createClientWaypoint(
+                MOD_ID,
+                waypoint.position(),
+                waypoint.key().toString(),
+                waypoint.dimension(),
+                false
+        );
+    }
+
     /**
      * Adds a single waypoint to the minimap or
      * does nothing if the waypoint already exists.
@@ -36,13 +46,11 @@ public class JourneyIntegration implements MinimapIntegration {
      */
     @Override
     public boolean addWaypoint(Waypoint waypoint) {
-        journeymap.api.v2.common.waypoint.Waypoint jwaypoint = WaypointFactory.createClientWaypoint(
-                MOD_ID,
-                waypoint.position(),
-                waypoint.key().toString(),
-                waypoint.dimension(),
-                false
-        );
-        return group.addWaypoint(jwaypoint);
+        return group.addWaypoint(convert(waypoint));
+    }
+
+    @Override
+    public void updateWaypoint(Waypoint waypoint) {
+        addWaypoint(waypoint);
     }
 }

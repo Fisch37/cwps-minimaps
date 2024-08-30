@@ -13,4 +13,14 @@ public interface MinimapIntegration {
      * @return Whether the waypoint was actually added or it already existed
      */
     boolean addWaypoint(Waypoint waypoint);
+
+    /**
+     * Updates an existing waypoint.
+     *
+     * @apiNote Some implementations may support updating non-added waypoints,
+     *  but this should not be relied upon.
+     *
+     * @param waypoint The waypoint to add
+     */
+    void updateWaypoint(Waypoint waypoint);
 }
