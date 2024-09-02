@@ -21,6 +21,10 @@ repositories {
         name = "JourneyMap (Public)"
         url = "https://jm.gserv.me/repository/maven-public/"
     }
+    maven {
+        name = "WispForest"
+        url = 'https://maven.wispforest.io/releases/'
+    }
     exclusiveContent {
         forRepository {
             maven {
@@ -45,6 +49,8 @@ dependencies {
 
     // Client WPS
     include(modImplementation "de.fisch37:client-wps:${project.client_wps_version}")
+    // OwO Lib (for ui)
+    include (modImplementation "io.wispforest:owo-lib:${project.owo_version}")
 
     // Minimap Versions
     // Journey Map API
