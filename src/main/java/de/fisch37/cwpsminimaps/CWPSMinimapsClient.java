@@ -26,6 +26,8 @@ public class CWPSMinimapsClient implements ClientModInitializer {
      */
     @Override
     public void onInitializeClient() {
+        InputHandler.register();
+
         IntegrationRegistry.registerIfAbsent("journeymap", JourneyIntegration.class);
         IntegrationRegistry.registerIfAbsent("xaerominimap", XaeroIntegration.class);
 

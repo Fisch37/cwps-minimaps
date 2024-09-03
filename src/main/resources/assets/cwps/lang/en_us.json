@@ -1,0 +1,8 @@
+{
+  "gui.cwps.waypoints_menu.sort_by_access": "Access",
+  "gui.cwps.waypoints_menu.sort_by_name": "Name",
+  "gui.cwps.waypoints_menu.sort_by_author": "Author",
+  "gui.cwps.waypoints.search_placeholder": "Search...",
+  "narrator.cwps.sort_option": "Sorting Option",
+  "gui.cwps.waypoints_menu.waypoints": "Waypoints"
+}
