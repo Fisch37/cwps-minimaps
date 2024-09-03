@@ -1,11 +1,8 @@
 package de.fisch37.cwpsminimaps.gui;
 
 import de.fisch37.clientwps.data.Waypoint;
-import io.wispforest.owo.ui.component.Components;
-import io.wispforest.owo.ui.component.TextBoxComponent;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
-import io.wispforest.owo.ui.core.Positioning;
 import io.wispforest.owo.ui.core.Sizing;
 import net.minecraft.text.Text;
 
@@ -17,9 +14,8 @@ import java.util.function.BiConsumer;
 public class WaypointListComponent extends FlowLayout {
     static final int SORT_HEIGHT = 16;
 
-    private final TextBoxComponent box;
-    private final List<Waypoint> waypoints;
-    private final List<WaypointComponent> widgets;
+    private final FlowLayout waypointContainer;
+    private final List<WaypointComponent> waypointComponents;
     private final List<SortOption> sortOptions;
     private final FlowLayout sortContainer;
 
@@ -35,47 +31,54 @@ public class WaypointListComponent extends FlowLayout {
             List<Waypoint> waypoints
     ) {
         super(horizontalSizing, verticalSizing, Algorithm.VERTICAL);
-        box = Components.textBox(Sizing.fill(), "");
-        box.setPlaceholder(Text.translatable("gui.cwps.waypoints.search_placeholder"));
-        box.onChanged().subscribe(this::updateSearch);
 
         sortContainer = Containers.horizontalFlow(Sizing.fill(), Sizing.fixed(SORT_HEIGHT));
+        sortContainer.id("sort_container");
         sortOptions = new ArrayList<>(3);
         this.child(sortContainer);
         final Comparator<Waypoint> nameComparator = Comparator.comparing(waypoint -> waypoint.key().name());
+        // This looks like bullshit and it is, but there's a layouting bug in OwO
+        // that means positioned objects are not counted by expand
         var accessSortOption = addSortOption(
                 "gui.cwps.waypoints_menu.sort_by_access",
                 Comparator.comparing(Waypoint::access)
         );
-        addSortOption(
-                "gui.cwps.waypoints_menu.sort_by_name",
-                nameComparator
+        accessSortOption.id("sort_by_access");
+        sortContainer.child(Containers.horizontalFlow(Sizing.fill(70), Sizing.fill())
+                .child(accessSortOption)
+                .child(addSortOption(
+                        "gui.cwps.waypoints_menu.sort_by_name",
+                        nameComparator
+                ).horizontalSizing(Sizing.expand())
+                        .id("sort_by_name"))
+                .id("sort_subcontainer")
         );
-        addSortOption(
+        sortContainer.child(addSortOption(
                 "gui.cwps.waypoints_menu.sort_by_author",
                 WaypointListComponent::authorComparator
-        ).positioning(Positioning.across(70, 0));
+        ).horizontalSizing(Sizing.expand()).id("sort_by_author"));
 
         int accessLevelColWidth = accessSortOption.getPreCalcWidth();
 
-        this.waypoints = waypoints;
-        this.widgets = new ArrayList<>(waypoints.size());
+        waypointContainer = Containers.verticalFlow(Sizing.fill(), Sizing.fill());
+        waypointContainer.id("waypoint_container");
+        this.child(waypointContainer);
+        waypointComponents = new ArrayList<>(waypoints.size());
         for (Waypoint waypoint : waypoints) {
             WaypointComponent component = new WaypointComponent(waypoint, accessLevelColWidth);
             component.horizontalSizing(Sizing.fill());
-            this.widgets.add(component);
-            this.child(component);
+            waypointComponents.add(component);
+            waypointContainer.child(component);
         }
 
         setSorting(nameComparator, false);
     }
 
     public void updateSearch(String search) {
-        this.clearChildren();
-        this.child(this.sortContainer);
-        for (WaypointComponent component : widgets) {
-            if (component.getWaypoint().key().name().contains(search)) {
-                this.child(component);
+        waypointContainer.clearChildren();
+        for (WaypointComponent component : waypointComponents) {
+            if (component.getWaypoint().key().name().startsWith(search)) {
+                waypointContainer.child(component);
             }
         }
     }
@@ -87,15 +90,14 @@ public class WaypointListComponent extends FlowLayout {
             derived = (a,b) -> normal.compare(b,a);
         }
 
-        this.widgets.forEach(this::removeChild);
-        this.widgets.sort(derived);
-        this.widgets.forEach(this::child);
+        this.waypointComponents.forEach(waypointContainer::removeChild);
+        this.waypointComponents.sort(derived);
+        this.waypointComponents.forEach(waypointContainer::child);
     }
 
     private SortOption addSortOption(String key, Comparator<Waypoint> comparator) {
         SortOption sortOption = new SortOption(Text.translatable(key))
                 .callback(makeSortCallback(comparator));
-        sortContainer.child(sortOption);
         sortOptions.add(sortOption);
         return sortOption;
     }
