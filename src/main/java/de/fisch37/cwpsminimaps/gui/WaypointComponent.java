@@ -7,14 +7,18 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class WaypointComponent extends BaseComponent {
+    private static final int LEVEL_TEXTURE_SIZE = WaypointListComponent.SORT_HEIGHT;
+
     private final Waypoint waypoint;
     private final Identifier accessTexture;
+    private final int accessWidth;
     private boolean focused;
 
-    public WaypointComponent(Waypoint waypoint) {
+    public WaypointComponent(Waypoint waypoint, int accessWidth) {
         super();
         this.waypoint = waypoint;
         this.accessTexture = TextureIdentifier.fromAccess(waypoint.access());
+        this.accessWidth = accessWidth;
         this.sizing(Sizing.fill(), Sizing.fixed(WaypointListComponent.SORT_HEIGHT));
     }
 
@@ -45,7 +49,6 @@ public class WaypointComponent extends BaseComponent {
             float partialTicks,
             float delta
     ) {
-        final int LEVEL_TEXTURE_SIZE = WaypointListComponent.SORT_HEIGHT;
         final float TEXT_SCALE = 1;
         final int TEXT_COLOR = 0xFFFFFF;
         int penX = x + 1;
@@ -53,11 +56,20 @@ public class WaypointComponent extends BaseComponent {
 
 
         context.drawGuiTexture(accessTexture, penX, penY, LEVEL_TEXTURE_SIZE, LEVEL_TEXTURE_SIZE);
-        penX += WaypointListComponent.ACCESS_WIDTH;
-        context.drawText(Text.literal(waypoint.key().name()), penX, penY + 4, TEXT_SCALE, TEXT_COLOR);
-        penX += WaypointListComponent.NAME_WIDTH;
+        penX += accessWidth + SortOption.ICON_SIZE;
+        context.drawText(
+                Text.literal(waypoint.key().name()),
+                penX, penY + 4,
+                TEXT_SCALE,
+                TEXT_COLOR
+        );
         if (waypoint.key().ownerName() != null)
-            context.drawText(Text.literal(waypoint.key().ownerName()), penX, penY + 4, TEXT_SCALE, TEXT_COLOR);
+            context.drawText(
+                    Text.literal(waypoint.key().ownerName()),
+                    x + (int)(width * 0.7) + SortOption.ICON_SIZE, penY + 4,
+                    TEXT_SCALE,
+                    TEXT_COLOR
+            );
 
 
         if (focused)
