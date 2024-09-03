@@ -9,17 +9,20 @@ import net.minecraft.util.Identifier;
 public class WaypointComponent extends BaseComponent {
     private static final int LEVEL_TEXTURE_SIZE = WaypointListComponent.SORT_HEIGHT;
 
+    private final WaypointListComponent listComponent;
     private final Waypoint waypoint;
     private final Identifier accessTexture;
     private final int accessWidth;
     private boolean focused;
 
-    public WaypointComponent(Waypoint waypoint, int accessWidth) {
+    public WaypointComponent(Waypoint waypoint, int accessWidth, WaypointListComponent listComponent) {
         super();
         this.waypoint = waypoint;
         this.accessTexture = TextureIdentifier.fromAccess(waypoint.access());
         this.accessWidth = accessWidth;
         this.sizing(Sizing.fill(), Sizing.fixed(WaypointListComponent.SORT_HEIGHT));
+        // This might cause a memory leak, but honestly I don't caring
+        this.listComponent = listComponent;
     }
 
     public Waypoint getWaypoint() {
@@ -85,5 +88,10 @@ public class WaypointComponent extends BaseComponent {
             float delta
     ) {
         // Removes double-draw when focused via keyboard
+    }
+
+    @Override
+    public boolean onKeyPress(int keyCode, int scanCode, int modifiers) {
+        return listComponent.onKeyPress(keyCode, scanCode, modifiers);
     }
 }

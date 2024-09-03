@@ -3,8 +3,11 @@ package de.fisch37.cwpsminimaps.gui;
 import de.fisch37.clientwps.data.Waypoint;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
+import io.wispforest.owo.ui.container.ScrollContainer;
+import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Sizing;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,6 +17,7 @@ import java.util.function.BiConsumer;
 public class WaypointListComponent extends FlowLayout {
     static final int SORT_HEIGHT = 16;
 
+    private final AdvancedScrollContainer<FlowLayout> waypointScrollable;
     private final FlowLayout waypointContainer;
     private final List<WaypointComponent> waypointComponents;
     private final List<SortOption> sortOptions;
@@ -49,7 +53,7 @@ public class WaypointListComponent extends FlowLayout {
                 .child(addSortOption(
                         "gui.cwps.waypoints_menu.sort_by_name",
                         nameComparator
-                ).horizontalSizing(Sizing.expand())
+                ).setActive(true).horizontalSizing(Sizing.expand())
                         .id("sort_by_name"))
                 .id("sort_subcontainer")
         );
@@ -60,12 +64,14 @@ public class WaypointListComponent extends FlowLayout {
 
         int accessLevelColWidth = accessSortOption.getPreCalcWidth();
 
-        waypointContainer = Containers.verticalFlow(Sizing.fill(), Sizing.fill());
+        waypointContainer = Containers.verticalFlow(Sizing.fill(), Sizing.content());
         waypointContainer.id("waypoint_container");
-        this.child(waypointContainer);
+        waypointScrollable = AdvancedScrollContainer.vertical(Sizing.expand(), Sizing.expand(), waypointContainer);
+        waypointScrollable.scrollbar(ScrollContainer.Scrollbar.vanillaFlat());
+        this.child(waypointScrollable);
         waypointComponents = new ArrayList<>(waypoints.size());
         for (Waypoint waypoint : waypoints) {
-            WaypointComponent component = new WaypointComponent(waypoint, accessLevelColWidth);
+            WaypointComponent component = new WaypointComponent(waypoint, accessLevelColWidth, this);
             component.horizontalSizing(Sizing.fill());
             waypointComponents.add(component);
             waypointContainer.child(component);
@@ -77,7 +83,7 @@ public class WaypointListComponent extends FlowLayout {
     public void updateSearch(String search) {
         waypointContainer.clearChildren();
         for (WaypointComponent component : waypointComponents) {
-            if (component.getWaypoint().key().name().startsWith(search)) {
+            if (component.getWaypoint().key().name().toLowerCase().startsWith(search.toLowerCase())) {
                 waypointContainer.child(component);
             }
         }
@@ -110,5 +116,43 @@ public class WaypointListComponent extends FlowLayout {
             }
             setSorting(comparator, inverted);
         };
+    }
+
+    @Override
+    public boolean onKeyPress(int keyCode, int scanCode, int modifiers) {
+        var focusHandler = focusHandler();
+        if (focusHandler == null)
+            return false;
+        focusHandler.moveFocus(keyCode);
+        var focused = focusHandler.focused();
+        if (focused instanceof WaypointComponent) {
+            waypointScrollable.scrollTo(
+                    waypointScrollable.getScrollPosition()/waypointScrollable.getMaxScroll()
+                            + scrollByToShow(focused)
+            );
+        }
+        return true;
+    }
+
+    /**
+     * Determines the least amount of scrolling required for the component to be fully visible
+     * @param component The component to evaluate for
+     * @return The amount to scroll by relative to the maximum scrolling value
+     */
+    private @Range(from = -1, to = 1) double scrollByToShow(Component component) {
+        double visibleTop = waypointScrollable.y();
+        double visibleBottom = visibleTop + waypointScrollable.height();
+
+        double distanceToTop = component.y() - visibleTop;
+        if (distanceToTop < 0) {
+            return distanceToTop / waypointScrollable.getChildHeight();
+        }
+
+        double distanceToBottom = component.y() + component.height() - visibleBottom;
+        if (distanceToBottom > 0) {
+            return distanceToBottom / waypointScrollable.getChildHeight();
+        }
+
+        return 0;
     }
 }

@@ -32,7 +32,7 @@ public class WaypointScreen extends BaseOwoScreen<FlowLayout> {
 
         var searchBox = Components.textBox(Sizing.fill());
         var waypointList = new WaypointListComponent(
-                Sizing.fill(), Sizing.fill(),
+                Sizing.fill(), Sizing.expand(),
                 waypoints
         );
         searchBox.horizontalSizing(Sizing.fill())
