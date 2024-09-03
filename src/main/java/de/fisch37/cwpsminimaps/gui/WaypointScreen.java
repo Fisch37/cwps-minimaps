@@ -29,23 +29,30 @@ public class WaypointScreen extends BaseOwoScreen<FlowLayout> {
         rootComponent.surface(Surface.VANILLA_TRANSLUCENT)
                 .horizontalAlignment(HorizontalAlignment.CENTER)
                 .verticalAlignment(VerticalAlignment.TOP);
+
+        var searchBox = Components.textBox(Sizing.fill());
+        var waypointList = new WaypointListComponent(
+                Sizing.fill(), Sizing.fill(),
+                waypoints
+        );
+        searchBox.horizontalSizing(Sizing.fill())
+                .id("search");
+        searchBox.setPlaceholder(Text.translatable("gui.cwps.waypoints.search_placeholder"));
+        searchBox.onChanged().subscribe(waypointList::updateSearch);
+
         rootComponent
                 .child(Containers.horizontalFlow(Sizing.fill(), Sizing.fill())
-                        .child(Containers.verticalFlow(Sizing.fill(30), Sizing.fill())
+                        .child(Containers.verticalFlow(Sizing.fill(15), Sizing.fill())
                                 .child(Components.button(
                                         Text.translatable("gui.cwps.waypoints_menu.waypoints"),
                                         button -> {}
                                 ).horizontalSizing(Sizing.fill()))
                                 .margins(Insets.right(5))
                         )
-                        .child(Containers.verticalFlow(Sizing.fill(70), Sizing.fill())
-                                .child(Components.textBox(Sizing.fill())
-                                        .horizontalSizing(Sizing.fill())
-                                        .id("search"))
-                                .child(new WaypointListComponent(
-                                        Sizing.fill(), Sizing.fill(),
-                                        waypoints
-                                ))
+
+                        .child(Containers.verticalFlow(Sizing.expand(), Sizing.fill())
+                                .child(searchBox)
+                                .child(waypointList)
                         )
                         .padding(Insets.of(10, 10, 5, 10))
                 );
