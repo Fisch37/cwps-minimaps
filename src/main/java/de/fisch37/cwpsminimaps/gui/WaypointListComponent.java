@@ -4,10 +4,8 @@ import de.fisch37.clientwps.data.Waypoint;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.ScrollContainer;
-import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Sizing;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -126,33 +124,8 @@ public class WaypointListComponent extends FlowLayout {
         focusHandler.moveFocus(keyCode);
         var focused = focusHandler.focused();
         if (focused instanceof WaypointComponent) {
-            waypointScrollable.scrollTo(
-                    waypointScrollable.getScrollPosition()/waypointScrollable.getMaxScroll()
-                            + scrollByToShow(focused)
-            );
+            waypointScrollable.scrollIntoView(focused);
         }
         return true;
-    }
-
-    /**
-     * Determines the least amount of scrolling required for the component to be fully visible
-     * @param component The component to evaluate for
-     * @return The amount to scroll by relative to the maximum scrolling value
-     */
-    private @Range(from = -1, to = 1) double scrollByToShow(Component component) {
-        double visibleTop = waypointScrollable.y();
-        double visibleBottom = visibleTop + waypointScrollable.height();
-
-        double distanceToTop = component.y() - visibleTop;
-        if (distanceToTop < 0) {
-            return distanceToTop / waypointScrollable.getChildHeight();
-        }
-
-        double distanceToBottom = component.y() + component.height() - visibleBottom;
-        if (distanceToBottom > 0) {
-            return distanceToBottom / waypointScrollable.getChildHeight();
-        }
-
-        return 0;
     }
 }
