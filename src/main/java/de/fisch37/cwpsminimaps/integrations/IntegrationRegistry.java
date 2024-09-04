@@ -70,7 +70,6 @@ public abstract class IntegrationRegistry {
         Optional<MinimapIntegration> integration = makeAvailableIntegration();
         if (integration.isPresent()) {
             MinimapIntegration integrationValue = integration.get();
-            reloadWaypoints(integrationValue);
             LOG.info("Registered minimap integration {}", integrationValue.getClass());
         } else {
             LOG.info("No minimap Integration found, none started");
